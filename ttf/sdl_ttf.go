@@ -189,6 +189,31 @@ func (f *Font) RenderUTF8Blended(text string, color sdl.Color) (*sdl.Surface, er
 	return surface, nil
 }
 
+// RenderUTF8SolidWrapped creates an 8-bit palettized surface and render the given text at fast quality with the given font and color.
+func (f *Font) RenderUTF8SolidWrapped(text string, fg sdl.Color, wrapLength int) (*sdl.Surface, error) {
+	_text := C.CString(text)
+	defer C.free(unsafe.Pointer(_text))
+	_c := C.SDL_Color{C.Uint8(fg.R), C.Uint8(fg.G), C.Uint8(fg.B), C.Uint8(fg.A)}
+	surface := (*sdl.Surface)(unsafe.Pointer(C.TTF_RenderUTF8_Solid_Wrapped(f.f, _text, _c, C.Uint32(wrapLength))))
+	if surface == nil {
+		return nil, GetError()
+	}
+	return surface, nil
+}
+
+// RenderUTF8ShadedWrapped creates an 8-bit palettized surface and render the given text ad high quality with the given font and colors.
+func (f *Font) RenderUTF8ShadedWrapped(text string, fg, bg sdl.Color, wrapLength int) (*sdl.Surface, error) {
+	_text := C.CString(text)
+	defer C.free(unsafe.Pointer(_text))
+	_fgc := C.SDL_Color{C.Uint8(fg.R), C.Uint8(fg.G), C.Uint8(fg.B), C.Uint8(fg.A)}
+	_bgc := C.SDL_Color{C.Uint8(bg.R), C.Uint8(bg.G), C.Uint8(bg.B), C.Uint8(bg.A)}
+	surface := (*sdl.Surface)(unsafe.Pointer(C.TTF_RenderUTF8_Shaded_Wrapped(f.f, _text, _fgc, _bgc, C.Uint32(wrapLength))))
+	if surface == nil {
+		return nil, GetError()
+	}
+	return surface, nil
+}
+
 // RenderUTF8BlendedWrapped creates a 32-bit ARGB surface and render the given text at high quality, using alpha blending to dither the font with the given color. Text is wrapped to multiple lines on line endings and on word boundaries if it extends beyond wrapLength in pixels.
 func (f *Font) RenderUTF8BlendedWrapped(text string, fg sdl.Color, wrapLength int) (*sdl.Surface, error) {
 	_text := C.CString(text)
